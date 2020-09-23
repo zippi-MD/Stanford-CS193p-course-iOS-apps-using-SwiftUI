@@ -21,7 +21,7 @@ struct ContentView: View {
         }
         .foregroundColor(.orange)
         .padding()
-        .font(.largeTitle)
+        .font(viewModel.emojiFont())
     }
 }
 

@@ -18,6 +18,10 @@ class EmojiMemoryGame {
         }
     }
     
+    func emojiFont() -> Font {
+        return model.cards.count/2 < 5 ? .largeTitle : .title3
+    }
+    
     //MARK: - Access to the Model
     var cards: Array<MemoryGame<String>.Card> {
         return model.cards.shuffled()
