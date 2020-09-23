@@ -11,8 +11,13 @@ class EmojiMemoryGame {
     private var model = createMemoryGame()
     
     static func createMemoryGame() -> MemoryGame<String> {
-        let emojis = ["🦙", "🎉", "🙌🏻", "👌🏻", "👍🏻"]
-        let pairsOfCards = Int.random(in: 2...emojis.count)
+        let availableEmojis = ["🦙", "🎉", "🙌🏻", "👌🏻", "👍🏻", "🙏🏻", "🙊", "🥳", "😐", "🙈", "👅", "😅"]
+        let maxPairOfCards: Int = 5
+        let minPairOfCards: Int = 2
+        
+        let emojis = availableEmojis.shuffled()[0..<maxPairOfCards]
+        let pairsOfCards = Int.random(in: minPairOfCards...emojis.count)
+        
         return MemoryGame<String>(numberOfPairsOfCards: pairsOfCards) { pairIndex in
             return emojis[pairIndex]
         }
