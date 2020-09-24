@@ -19,8 +19,21 @@ struct MemoryGame<CardContent> {
         }
     }
     
+    mutating
     func choose(card: Card) {
         print("card chosen \(card )")
+        let chosenCardIndex = index(of: card)
+        cards[chosenCardIndex].isFaceUp = !cards[chosenCardIndex].isFaceUp
+    }
+    
+    func index(of card: Card) -> Int {
+        for (index, _) in cards.enumerated() {
+            if cards[index].id == card.id {
+                return index
+            }
+        }
+        
+        return 0 // TODO: Bogus
     }
     
     struct Card: Identifiable {
