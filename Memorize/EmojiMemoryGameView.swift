@@ -21,6 +21,7 @@ struct EmojiMemoryGameView: View {
                 .padding(5)
             }
             HStack {
+                Text("Score: \(viewModel.score)")
                 Spacer()
                 Button("New game") {
                     viewModel.newGame()
