@@ -20,6 +20,13 @@ struct EmojiMemoryGameView: View {
                 }
                 .padding(5)
             }
+            HStack {
+                Spacer()
+                Button("New game") {
+                    viewModel.newGame()
+                }
+            }
+            .font(.headline)
         }
         .foregroundColor(viewModel.color)
         .padding()

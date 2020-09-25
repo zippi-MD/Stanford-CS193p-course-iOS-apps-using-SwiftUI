@@ -39,6 +39,10 @@ class EmojiMemoryGame: ObservableObject {
         model.choose(card: card)
     }
     
+    func newGame() {
+        model = EmojiMemoryGame.createMemoryGame()
+    }
+    
     enum EmojiMemoryGameColors: String {
         case orange
         case red
