@@ -10,6 +10,8 @@ import SwiftUI
 struct EmojiArtDocumentView: View {
     @ObservedObject var document: EmojiArtDocument
     
+    @State private var selectedEmojis = Set<EmojiArt.Emoji>()
+    
     @State private var steadyStateZoomScale: CGFloat = 1
     @GestureState private var gestureZoomScale: CGFloat = 1
     
@@ -47,8 +49,10 @@ struct EmojiArtDocumentView: View {
                         .gesture(doubleTapToZoom(in: geometry.size))
                     ForEach(document.emojis){ emoji in
                         Text(emoji.text)
+                            .border(Color.black, width: selectedEmojis.contains(emoji) ? selectedEmojiBorderWidth : 0)
                             .font(animatableWithSize: emoji.fontSize * zoomScale)
                             .position(positon(for: emoji, in: geometry.size))
+                            .gesture(selectGesture(emoji))
                     }
                 }
                 .gesture(panGesture())
@@ -70,6 +74,7 @@ struct EmojiArtDocumentView: View {
     }
     
     private let defaultEmojiFontSize: CGFloat = 40
+    private let selectedEmojiBorderWidth: CGFloat = 1.5
     
     private func drop(providers: [NSItemProvider], at location: CGPoint) -> Bool {
         var found = providers.loadFirstObject(ofType: URL.self) { url in
@@ -128,6 +133,18 @@ struct EmojiArtDocumentView: View {
             }
             .onEnded { finalDragGestureValue in
                 steadyStatePanOffset = steadyStatePanOffset + (finalDragGestureValue.translation / zoomScale)
+            }
+    }
+    
+    private func selectGesture(_ emoji: EmojiArt.Emoji) -> some Gesture {
+        TapGesture()
+            .onEnded {
+                if selectedEmojis.contains(emoji) {
+                    selectedEmojis.remove(emoji)
+                }
+                else {
+                    selectedEmojis.insert(emoji)
+                }
             }
     }
 }
