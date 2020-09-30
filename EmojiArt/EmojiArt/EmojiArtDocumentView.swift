@@ -57,6 +57,7 @@ struct EmojiArtDocumentView: View {
                 }
                 .gesture(panGesture())
                 .gesture(zoomGesture())
+                .gesture(deselectGesture())
                 .clipped()
                 .foregroundColor(.white)
                 .edgesIgnoringSafeArea([.horizontal, .bottom])
@@ -145,6 +146,13 @@ struct EmojiArtDocumentView: View {
                 else {
                     selectedEmojis.insert(emoji)
                 }
+            }
+    }
+    
+    private func deselectGesture() -> some Gesture {
+        TapGesture()
+            .onEnded {
+                selectedEmojis.removeAll(keepingCapacity: true)
             }
     }
 }
