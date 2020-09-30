@@ -50,6 +50,14 @@ struct EmojiArt: Codable {
             self.size = size
             self.id = id
         }
+        
+        static func == (lhs: Emoji, rhs: Emoji) -> Bool {
+            return lhs.id == rhs.id && lhs.text == rhs.text
+        }
+        
+        func hash(into hasher: inout Hasher) {
+            hasher.combine(id)
+            hasher.combine(text)
+        }
     }
-    
 }

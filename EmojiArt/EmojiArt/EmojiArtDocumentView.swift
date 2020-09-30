@@ -44,12 +44,12 @@ struct EmojiArtDocumentView: View {
                         .overlay(
                             OptionalImage(image: document.backgroundImage)
                                 .scaleEffect(zoomScale)
-                                .offset(panOffset)
+                                .offset(selectedEmojis.isEmpty ? panOffset : steadyStatePanOffset * zoomScale)
                         )
                         .gesture(doubleTapToZoom(in: geometry.size))
                     ForEach(document.emojis){ emoji in
                         Text(emoji.text)
-                            .border(Color.black, width: selectedEmojis.contains(emoji) ? selectedEmojiBorderWidth : 0)
+                            .border(Color.black, width: selectedEmojis.contains(matching: emoji) ? selectedEmojiBorderWidth : 0)
                             .font(animatableWithSize: emoji.fontSize * zoomScale)
                             .position(positon(for: emoji, in: geometry.size))
                             .gesture(selectGesture(emoji))
@@ -94,8 +94,12 @@ struct EmojiArtDocumentView: View {
     private func positon(for emoji: EmojiArt.Emoji, in size: CGSize) -> CGPoint {
         var location = emoji.location
         location = CGPoint(x: location.x * zoomScale, y: location.y * zoomScale)
-        location = CGPoint(x: location.x + panOffset.width, y: location.y + panOffset.height)
         location = CGPoint(x: location.x + size.width/2, y: location.y + size.height/2)
+        
+        if selectedEmojis.isEmpty || selectedEmojis.contains(matching: emoji){
+            location = CGPoint(x: location.x + panOffset.width, y: location.y + panOffset.height)
+        }
+
         return location
     }
     
@@ -133,14 +137,21 @@ struct EmojiArtDocumentView: View {
                 gesturePanOffset = latestDragGestureValue.translation / zoomScale
             }
             .onEnded { finalDragGestureValue in
-                steadyStatePanOffset = steadyStatePanOffset + (finalDragGestureValue.translation / zoomScale)
+                if selectedEmojis.isEmpty {
+                    steadyStatePanOffset = steadyStatePanOffset + (finalDragGestureValue.translation / zoomScale)
+                }
+                else {
+                    for emoji in selectedEmojis {
+                        document.moveEmoji(emoji, by: (finalDragGestureValue.translation / zoomScale))
+                    }
+                }
             }
     }
     
     private func selectGesture(_ emoji: EmojiArt.Emoji) -> some Gesture {
         TapGesture()
             .onEnded {
-                if selectedEmojis.contains(emoji) {
+                if selectedEmojis.contains(matching: emoji) {
                     selectedEmojis.remove(emoji)
                 }
                 else {
