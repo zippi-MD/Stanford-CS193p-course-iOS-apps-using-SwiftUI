@@ -52,6 +52,9 @@ struct EmojiArtDocumentView: View {
                             .border(Color.black, width: selectedEmojis.contains(matching: emoji) ? selectedEmojiBorderWidth : 0)
                             .font(animatableWithSize: fontSizeFor(emoji))
                             .position(positon(for: emoji, in: geometry.size))
+                            .onTapGesture(count: 2) {
+                                document.removeEmoji(emoji)
+                            }
                             .gesture(selectGesture(emoji))
                     }
                 }
