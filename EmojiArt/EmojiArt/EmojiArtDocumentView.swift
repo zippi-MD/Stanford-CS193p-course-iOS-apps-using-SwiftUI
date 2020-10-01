@@ -93,14 +93,37 @@ struct EmojiArtDocumentView: View {
     
     private func positon(for emoji: EmojiArt.Emoji, in size: CGSize) -> CGPoint {
         var location = emoji.location
-        location = CGPoint(x: location.x * zoomScale, y: location.y * zoomScale)
-        location = CGPoint(x: location.x + size.width/2, y: location.y + size.height/2)
         
-        if selectedEmojis.isEmpty || selectedEmojis.contains(matching: emoji){
+        if selectedEmojis.isEmpty {
+            location = CGPoint(x: location.x * zoomScale, y: location.y * zoomScale)
+            location = CGPoint(x: location.x + size.width/2, y: location.y + size.height/2)
             location = CGPoint(x: location.x + panOffset.width, y: location.y + panOffset.height)
         }
-
+        else if selectedEmojis.contains(matching: emoji) {
+            location = CGPoint(x: location.x * zoomScale, y: location.y * zoomScale)
+            location = CGPoint(x: location.x + size.width/2, y: location.y + size.height/2)
+            location = CGPoint(x: location.x + panOffset.width, y: location.y + panOffset.height)
+        }
+        else {
+            location = CGPoint(x: location.x * zoomScale, y: location.y * zoomScale)
+            location = CGPoint(x: location.x + size.width/2, y: location.y + size.height/2)
+            location = CGPoint(x: location.x + (steadyStatePanOffset.width * zoomScale),
+                               y: location.y + (steadyStatePanOffset.height * zoomScale))
+        }
+        
+        
         return location
+    }
+    
+    private func fontSizeFor(_ emoji: EmojiArt.Emoji) -> CGFloat {
+        
+        if selectedEmojis.isEmpty || selectedEmojis.contains(matching: emoji) {
+            return emoji.fontSize * zoomScale
+        }
+        else {
+            return emoji.fontSize
+        }
+        
     }
     
     private func zoomToFit(_ image: UIImage?, size: CGSize) {
