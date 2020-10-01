@@ -43,14 +43,14 @@ struct EmojiArtDocumentView: View {
                     Rectangle()
                         .overlay(
                             OptionalImage(image: document.backgroundImage)
-                                .scaleEffect(zoomScale)
+                                .scaleEffect(selectedEmojis.isEmpty ? zoomScale : steadyStateZoomScale)
                                 .offset(selectedEmojis.isEmpty ? panOffset : steadyStatePanOffset * zoomScale)
                         )
                         .gesture(doubleTapToZoom(in: geometry.size))
                     ForEach(document.emojis){ emoji in
                         Text(emoji.text)
                             .border(Color.black, width: selectedEmojis.contains(matching: emoji) ? selectedEmojiBorderWidth : 0)
-                            .font(animatableWithSize: emoji.fontSize * zoomScale)
+                            .font(animatableWithSize: fontSizeFor(emoji))
                             .position(positon(for: emoji, in: geometry.size))
                             .gesture(selectGesture(emoji))
                     }
@@ -100,12 +100,12 @@ struct EmojiArtDocumentView: View {
             location = CGPoint(x: location.x + panOffset.width, y: location.y + panOffset.height)
         }
         else if selectedEmojis.contains(matching: emoji) {
-            location = CGPoint(x: location.x * zoomScale, y: location.y * zoomScale)
             location = CGPoint(x: location.x + size.width/2, y: location.y + size.height/2)
             location = CGPoint(x: location.x + panOffset.width, y: location.y + panOffset.height)
         }
         else {
-            location = CGPoint(x: location.x * zoomScale, y: location.y * zoomScale)
+            location = CGPoint(x: location.x * steadyStateZoomScale,
+                               y: location.y * steadyStateZoomScale)
             location = CGPoint(x: location.x + size.width/2, y: location.y + size.height/2)
             location = CGPoint(x: location.x + (steadyStatePanOffset.width * zoomScale),
                                y: location.y + (steadyStatePanOffset.height * zoomScale))
@@ -150,7 +150,15 @@ struct EmojiArtDocumentView: View {
                 gestureZoomScale = latestGestureState
             }
             .onEnded { finaleGestureScale in
-                steadyStateZoomScale *= finaleGestureScale
+                if selectedEmojis.isEmpty {
+                    steadyStateZoomScale *= finaleGestureScale
+                }
+                else {
+                    for emoji in selectedEmojis {
+                        document.escaleEmoji(emoji, by: finaleGestureScale)
+                    }
+                }
+                
             }
     }
     
